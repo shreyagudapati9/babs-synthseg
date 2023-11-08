@@ -22,11 +22,11 @@
 ## Output : 
 
 - Derivatives
-  - synthseg_fs7.1.1_parc_robust
+  - synthseg_fs7.4.1_parc_robust
     -
     -
     -
-  - synthseg_fs7.1.1_parc_notrobust
+  - synthseg_fs7.4.1_parc_notrobust
     -
     -
     -
