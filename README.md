@@ -30,3 +30,9 @@
     -
     -
     -
+
+## Commands to run synthseg :  
+
+**synthseg_fs7.4.1_parc_robust** : `mri_synthseg --i <input> --o <output> --vol <vol> --qc <qc> --post <post> --robust --parc`  
+
+**synthseg_fs7.4.1_parc_notrobust** : `mri_synthseg --i <input> --o <output> --vol <vol> --qc <qc> --post <post> --parc`
