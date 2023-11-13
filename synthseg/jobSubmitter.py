@@ -6,7 +6,7 @@ import subprocess
 
 def cli():
     parser = argparse.ArgumentParser(
-        description='Example BIDS App entrypoint script.')
+        description='SynthSeg BIDS App')
     parser.add_argument(
         'input_dir',
         help='The directory of the (unzipped) input dataset, '
@@ -46,14 +46,27 @@ def cli():
         required=True)
 
     return parser
+
 def run_robust_synthseg(scan, inFn, out_robust, volscsv, qccsv, postfn):
-    out_dir = op.join(out_robust, scan.rstrip(".nii.gz"))
+    print("===== Running SynthSeg (Robust) on : ", scan, " =====")
+
+    out_dir = op.join(out_robust, scan.split(".nii")[0])
+    volscsv = op.join(out_dir, volscsv)
+    qccsv = op.join(out_dir, qccsv)
+    postfn = op.join(out_dir, postfn)
     result = subprocess.run(["mri_synthseg", "--i", inFn, "--o", out_dir, "--vol", volscsv, "--qc", qccsv, "--post", postfn, "--robust", "--parc"])
+
     return result
 
 def run_notrobust_synthseg(scan, inFn, out_notrobust, volscsv, qccsv, postfn):
-    out_dir = op.join(out_notrobust, scan.rstrip(".nii.gz"))
+    print("===== Running SynthSeg (Not Robust) on : ", scan, " =====")
+
+    out_dir = op.join(out_notrobust, scan.split(".nii")[0])
+    volscsv = op.join(out_dir, volscsv)
+    qccsv = op.join(out_dir, qccsv)
+    postfn = op.join(out_dir, postfn)
     result = subprocess.run(["mri_synthseg", "--i", inFn, "--o", out_dir, "--vol", volscsv, "--qc", qccsv, "--post", postfn, "--parc"])
+
     return result
 
 def main():
@@ -74,7 +87,9 @@ def main():
         os.makedirs(args.output_dir)
 
     dir_4analysis = os.path.join(args.input_dir, participant_label)
-    sessions = [ses for ses in os.listdir(dir_4analysis) if op.isdir(ses)] # Gets sessions
+    #print(dir_4analysis)
+    sessions = [ses for ses in os.listdir(dir_4analysis) if op.isdir(op.join(dir_4analysis,ses))] # Gets sessions
+    #print(sessions)
 
     # Check scans to be processed :
     types_to_process = []
@@ -99,7 +114,8 @@ def main():
         sesPath = op.join(dir_4analysis, ses)
         if "anat" in os.listdir(sesPath):
             anatPath = op.join(sesPath, "anat")
-            scans = [fn for fn in os.listdir(anatPath) if any(x in fn for x in types_to_process)]
+            # Get only the scans we wish to process
+            scans = [fn for fn in os.listdir(anatPath) if (any(x in fn for x in types_to_process) and (".nii" in fn or ".nii.gz" in fn))]
         else :
             continue
         for scan in scans:
